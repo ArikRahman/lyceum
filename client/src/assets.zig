@@ -1,5 +1,4 @@
 const config = @import("config.zig");
-const map = @import("components/hud/map.zig");
 const messages = @import("server/messages.zig");
 const rl = @import("raylib");
 const rm = rl.math;
@@ -173,6 +172,5 @@ pub fn createMapImage(world: *const GameState.World.Map) !rl.Image {
             }
         }
     }
-    map.add_borders(&img);
     return img;
 }

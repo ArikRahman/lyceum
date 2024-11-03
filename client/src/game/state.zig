@@ -39,6 +39,7 @@ pub const World = struct {
         instance: messages.Map = .{},
         tiles: Tile_Table,
         objects: Object_Table,
+        size: f32 = config.map.mini_map_size,
     };
     pub const Character = struct {
         pub const Animation = struct {
@@ -72,6 +73,7 @@ pub const World = struct {
                 spells: []const [:0]const u8 = &.{},
                 consumables: []const [:0]const u8 = &.{},
                 minimap: struct {
+                    initial_map: ?rl.Image = null,
                     map: ?rl.Image = null,
                     texture: ?rl.Texture = null,
                 } = .{},

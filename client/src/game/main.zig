@@ -1,6 +1,7 @@
 const animate = @import("animation.zig");
 const camera = @import("camera.zig");
 const config = @import("../config.zig");
+const map = @import("../components/hud/map.zig");
 const messages = @import("../server/messages.zig");
 const physics = @import("physics.zig");
 const rl = @import("raylib");
@@ -18,6 +19,7 @@ fn drawPlayers(gameState: *GameState) void {
 }
 
 fn controlInput(entity: *GameState.World.Character) i16 {
+    const entity = &world.character;
     var tempAngle = entity.stats.face_direction;
     const velocity = &entity.velocity;
     const deltaTime = rl.getFrameTime();
@@ -37,6 +39,17 @@ fn controlInput(entity: *GameState.World.Character) i16 {
     } else if (rl.isKeyDown(.key_d)) {
         velocity.x += deltaVelocity;
         tempAngle = 90;
+    }
+
+    const zoom = rl.getMouseWheelMove() * 2;
+    if (zoom != 0) {
+        world.cameraDistance -= zoom;
+        world.map.size += zoom;
+        var img = rl.imageCopy(entity.inventory.hud.minimap.initial_map.?);
+        const width: f32 = @floatFromInt(world.map.instance.width);
+        const height: f32 = @floatFromInt(world.map.instance.height);
+        rl.imageResizeNN(&img, @intFromFloat(width * world.map.size), @intFromFloat(height * world.map.size));
+        entity.inventory.hud.minimap.map = img;
     }
 
     return tempAngle;
@@ -97,7 +110,7 @@ pub fn spawn(gameState: *GameState) !void {
 
     drawPlayers(gameState);
 
-    const tempAngle = controlInput(&gameState.world.character);
+    const tempAngle = controlInput(&gameState.world);
     physics.character.draw(&gameState.world.character, &gameState.world.map, tempAngle);
     animate.character.update(&gameState.world.character);
     camera.update(gameState);
